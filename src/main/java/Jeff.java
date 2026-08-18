@@ -37,6 +37,15 @@ public class Jeff {
 
                 System.out.println("Nice! I've marked this task as done:");
                 System.out.println("  " + task.getStatus() + " " + task.getDesc());
+                
+            } else if (input.startsWith("unmark ")) {
+                int taskNumber = Integer.parseInt(input.substring(7));
+                Task task = tasks[taskNumber - 1];
+
+                task.unmarkAsDone();
+
+                System.out.println("I've marked this task as undone:");
+                System.out.println("  " + task.getStatus() + " " + task.getDesc());
 
             } else {
                 tasks[count] = new Task(input);
