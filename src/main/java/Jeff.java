@@ -1,4 +1,7 @@
 import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.Scanner;
+
 public class Jeff {
     public static void main(String[] args) {
         String banner = "     _ _____ _____ _____ \n"
@@ -13,8 +16,7 @@ public class Jeff {
         System.out.println("What can I do for you?");
         System.out.println("____________________________________________________________");
 
-        Task[] tasks = new Task[100];
-        int count = 0;
+        ArrayList<Task> tasks = new ArrayList<>();
         Scanner scanner = new Scanner(System.in);
         while (true) {
             String input = scanner.nextLine();
@@ -29,17 +31,17 @@ public class Jeff {
             } else if (input.equals("list")) {
                 //task 4
                 System.out.println("Here are the tasks in your list:");
-                for (int i = 0; i < count; i++) {
-                    System.out.println(" " + (i + 1) + "." + tasks[i]);
+                for (int i = 0; i < tasks.size(); i++) {
+                    System.out.println(" " + (i + 1) + "." + tasks.get(i));
                 }
             } else if (input.startsWith("mark ")) {
                 // marks item as done
                 try {
                     int taskNumber = Integer.parseInt(input.substring(5).trim());
-                    if (taskNumber < 1 || taskNumber > count) {
+                    if (taskNumber < 1 || taskNumber > tasks.size()) {
                         System.out.println("OOPS! That task number does not exist.");
                     } else {
-                        Task task = tasks[taskNumber - 1];
+                        Task task = tasks.get(taskNumber - 1);
                         task.markAsDone();
 
                         System.out.println("Nice! I've marked this task as done:");
@@ -53,10 +55,10 @@ public class Jeff {
                 try {
                     int taskNumber = Integer.parseInt(input.substring(7).trim());
 
-                    if (taskNumber < 1 || taskNumber > count) {
+                    if (taskNumber < 1 || taskNumber > tasks.size()) {
                         System.out.println("That task number does not exist.");
                     } else {
-                        Task task = tasks[taskNumber - 1];
+                        Task task = tasks.get(taskNumber - 1);
                         task.unmarkAsDone();
 
                         System.out.println("I've marked this task as undone:");
@@ -66,39 +68,37 @@ public class Jeff {
                     System.out.println("Please enter a valid task number.");
                 }
             } else if (input.startsWith("todo")) {
+                //mark as todo
                 String description = input.substring(4).trim();
                 if (description.isEmpty()) {
                     System.out.println("Missing description.");
                 } else {
-                    tasks[count] = new Todo(description);
-                    count++;
+                    tasks.add(new Todo(description));
                     System.out.println("Got it. I've added this task:");
-                    System.out.println("  " + tasks[count - 1]);
-                    System.out.println("Now you have " + count + " tasks in the list.");
+                    System.out.println("  " + tasks.get(tasks.size() - 1));
+                    System.out.println("Now you have " + tasks.size() + " tasks in the list.");
                 }
-                } else if (input.startsWith("deadline ")) {
-                    String remaining = input.substring(9).trim();
-                    int separator = remaining.indexOf(" /by ");
+            } else if (input.startsWith("deadline ")) {
+                String remaining = input.substring(9).trim();
+                int separator = remaining.indexOf(" /by ");
 
-                    if (separator == -1) {
-                        System.out.println("A deadline must use: deadline <description> /by <date>");
+                if (separator == -1) {
+                    System.out.println("A deadline must use: deadline <description> /by <date>");
+                } else {
+                    String description = remaining.substring(0, separator).trim();
+                    String by = remaining.substring(separator + 5).trim();
+
+                    if (description.isEmpty()) {
+                        System.out.println("A deadline needs a description.");
+                    } else if (by.isEmpty()) {
+                        System.out.println("A deadline needs a date.");
                     } else {
-                        String description = remaining.substring(0, separator).trim();
-                        String by = remaining.substring(separator + 5).trim();
-
-                        if (description.isEmpty()) {
-                            System.out.println("A deadline needs a description.");
-                        } else if (by.isEmpty()) {
-                            System.out.println("A deadline needs a date.");
-                        } else {
-                            tasks[count] = new Deadline(description, by);
-                            count++;
-
-                            System.out.println("Got it. I've added this task:");
-                            System.out.println("  " + tasks[count - 1]);
-                            System.out.println("Now you have " + count + " tasks in the list.");
-                        }
+                        tasks.add(new Deadline(description, by));
+                        System.out.println("Got it. I've added this task:");
+                        System.out.println("  " + tasks.get(tasks.size() - 1));
+                        System.out.println("Now you have " + tasks.size() + " tasks in the list.");
                     }
+                }
             } else if (input.startsWith("event ")) {
                 String remaining = input.substring(6).trim();
 
@@ -119,17 +119,31 @@ public class Jeff {
                     } else if (to.isEmpty()) {
                         System.out.println("An event needs an end time.");
                     } else {
-                        tasks[count] = new Event(description, from, to);
-                        count++;
-
+                        tasks.add(new Event(description, from, to));
                         System.out.println("Got it. I've added this task:");
-                        System.out.println("  " + tasks[count - 1]);
-                        System.out.println("Now you have " + count + " tasks in the list.");
+                        System.out.println("  " + tasks.get(tasks.size() - 1));
+                        System.out.println("Now you have " + tasks.size() + " tasks in the list.");
                     }
                 }
-            } else {
-                    System.out.println("Invalid command.");
+            } else if (input.startsWith("delete ")) {
+                try {
+                    int taskNumber = Integer.parseInt(input.substring(7).trim());
+
+                    if (taskNumber < 1 || taskNumber > tasks.size()) {
+                        System.out.println("That task number does not exist.");
+                    } else {
+                        Task removedTask = tasks.remove(taskNumber - 1);
+                        System.out.println("Noted. I've removed this task:");
+                        System.out.println("  " + removedTask);
+                        System.out.println("Now you have " + tasks.size() + " tasks in the list.");
+                    }
+
+                } catch (NumberFormatException e) {
+                    System.out.println("Please enter a valid task number.");
                 }
+            } else {
+                System.out.println("Invalid command.");
+            }
 
             System.out.println("____________________________________________________________");
         }
