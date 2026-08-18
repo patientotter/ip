@@ -33,68 +33,103 @@ public class Jeff {
                     System.out.println(" " + (i + 1) + "." + tasks[i]);
                 }
             } else if (input.startsWith("mark ")) {
-                //marks item as done (task 3)
-                int taskNumber = Integer.parseInt(input.substring(5));
-                Task task = tasks[taskNumber - 1];
-                task.markAsDone();
-                System.out.println("Nice! I've marked this task as done:");
-                System.out.println("  " + task.getStatus() + " " + task.getDesc());
+                // marks item as done
+                try {
+                    int taskNumber = Integer.parseInt(input.substring(5).trim());
+                    if (taskNumber < 1 || taskNumber > count) {
+                        System.out.println("OOPS! That task number does not exist.");
+                    } else {
+                        Task task = tasks[taskNumber - 1];
+                        task.markAsDone();
 
+                        System.out.println("Nice! I've marked this task as done:");
+                        System.out.println("  " + task.getStatus() + " " + task.getDesc());
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Please enter a valid task number.");
+                }
             } else if (input.startsWith("unmark ")) {
-                //marks item as undone (task 3)
-                int taskNumber = Integer.parseInt(input.substring(7));
-                Task task = tasks[taskNumber - 1];
-                task.unmarkAsDone();
-                System.out.println("I've marked this task as undone:");
-                System.out.println("  " + task.getStatus() + " " + task.getDesc());
+                // marks item as undone
+                try {
+                    int taskNumber = Integer.parseInt(input.substring(7).trim());
 
-            } else if (input.startsWith("todo ")) {
-                String description = input.substring(5);
+                    if (taskNumber < 1 || taskNumber > count) {
+                        System.out.println("That task number does not exist.");
+                    } else {
+                        Task task = tasks[taskNumber - 1];
+                        task.unmarkAsDone();
 
-                tasks[count] = new Todo(description);
-                count++;
+                        System.out.println("I've marked this task as undone:");
+                        System.out.println("  " + task.getStatus() + " " + task.getDesc());
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Please enter a valid task number.");
+                }
+            } else if (input.startsWith("todo")) {
+                String description = input.substring(4).trim();
+                if (description.isEmpty()) {
+                    System.out.println("Missing description.");
+                } else {
+                    tasks[count] = new Todo(description);
+                    count++;
+                    System.out.println("Got it. I've added this task:");
+                    System.out.println("  " + tasks[count - 1]);
+                    System.out.println("Now you have " + count + " tasks in the list.");
+                }
+                } else if (input.startsWith("deadline ")) {
+                    String remaining = input.substring(9).trim();
+                    int separator = remaining.indexOf(" /by ");
 
-                System.out.println("Got it. I've added this task:");
-                System.out.println("  " + tasks[count - 1]);
-                System.out.println("Now you have " + count + " tasks in the list.");
+                    if (separator == -1) {
+                        System.out.println("A deadline must use: deadline <description> /by <date>");
+                    } else {
+                        String description = remaining.substring(0, separator).trim();
+                        String by = remaining.substring(separator + 5).trim();
 
-            } else if (input.startsWith("deadline ")) {
-                String remaining = input.substring(9);
+                        if (description.isEmpty()) {
+                            System.out.println("A deadline needs a description.");
+                        } else if (by.isEmpty()) {
+                            System.out.println("A deadline needs a date.");
+                        } else {
+                            tasks[count] = new Deadline(description, by);
+                            count++;
 
-                int separator = remaining.indexOf(" /by ");
-
-                String description = remaining.substring(0, separator);
-                String by = remaining.substring(separator + 5);
-
-                tasks[count] = new Deadline(description, by);
-                count++;
-
-                System.out.println("Got it. I've added this task:");
-                System.out.println("  " + tasks[count - 1]);
-                System.out.println("Now you have " + count + " tasks in the list.");
-
+                            System.out.println("Got it. I've added this task:");
+                            System.out.println("  " + tasks[count - 1]);
+                            System.out.println("Now you have " + count + " tasks in the list.");
+                        }
+                    }
             } else if (input.startsWith("event ")) {
-                String remaining = input.substring(6);
+                String remaining = input.substring(6).trim();
 
                 int fromSeparator = remaining.indexOf(" /from ");
                 int toSeparator = remaining.indexOf(" /to ");
 
-                String description = remaining.substring(0, fromSeparator);
-                String from = remaining.substring(fromSeparator + 7, toSeparator);
-                String to = remaining.substring(toSeparator + 4);
+                if (fromSeparator == -1 || toSeparator == -1 || fromSeparator >= toSeparator) {
+                    System.out.println("An event must use: event <description> /from <time> /to <time>");
+                } else {
+                    String description = remaining.substring(0, fromSeparator).trim();
+                    String from = remaining.substring(fromSeparator + 7, toSeparator).trim();
+                    String to = remaining.substring(toSeparator + 5).trim();
 
-                tasks[count] = new Event(description, from, to);
-                count++;
+                    if (description.isEmpty()) {
+                        System.out.println("An event needs a description.");
+                    } else if (from.isEmpty()) {
+                        System.out.println("An event needs a start time.");
+                    } else if (to.isEmpty()) {
+                        System.out.println("An event needs an end time.");
+                    } else {
+                        tasks[count] = new Event(description, from, to);
+                        count++;
 
-                System.out.println("Got it. I've added this task:");
-                System.out.println("  " + tasks[count - 1]);
-                System.out.println("Now you have " + count + " tasks in the list.");
-
+                        System.out.println("Got it. I've added this task:");
+                        System.out.println("  " + tasks[count - 1]);
+                        System.out.println("Now you have " + count + " tasks in the list.");
+                    }
+                }
             } else {
-                tasks[count] = new Task(input);
-                count++;
-                System.out.println(" added: " + input);
-            }
+                    System.out.println("Invalid command.");
+                }
 
             System.out.println("____________________________________________________________");
         }
