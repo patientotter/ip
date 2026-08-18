@@ -13,7 +13,7 @@ public class Jeff {
         System.out.println("What can I do for you?");
         System.out.println("____________________________________________________________");
 
-        String[] tasks = new String[100];
+        Task[] tasks = new Task[100];
         int count = 0;
         Scanner scanner = new Scanner(System.in);
         while (true) {
@@ -27,10 +27,19 @@ public class Jeff {
                 break;
             } else if (input.equals("list")) {
                 for (int i = 0; i < count; i++) {
-                    System.out.println(" " + (i + 1) + ". " + tasks[i]);
+                    System.out.println(" " + (i + 1) + "." + tasks[i].getStatus() + tasks[i].getDesc());
                 }
+            } else if (input.startsWith("mark ")) {
+                int taskNumber = Integer.parseInt(input.substring(5));
+                Task task = tasks[taskNumber - 1];
+
+                task.markAsDone();
+
+                System.out.println("Nice! I've marked this task as done:");
+                System.out.println("  " + task.getStatus() + " " + task.getDesc());
+
             } else {
-                tasks[count] = input;
+                tasks[count] = new Task(input);
                 count++;
                 System.out.println(" added: " + input);
             }
