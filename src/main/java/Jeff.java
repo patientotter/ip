@@ -1,5 +1,4 @@
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Scanner;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -18,13 +17,13 @@ public class Jeff {
         System.out.println("What can I do for you?");
         System.out.println("____________________________________________________________");
 
-        ArrayList<Task> tasks;
+        TaskList tasks;
 
         try {
-            tasks = Storage.loadTasks();
+            tasks = new TaskList(Storage.loadTasks());
         } catch (IOException e) {
             System.out.println("Unable to load saved tasks. Starting with an empty list.");
-            tasks = new ArrayList<>();
+            tasks = new TaskList();
         }
 
         Scanner scanner = new Scanner(System.in);
@@ -86,6 +85,7 @@ public class Jeff {
                     System.out.println("Missing description.");
                 } else {
                     tasks.add(new Todo(description));
+                    saveTasks(tasks);
                     System.out.println("Got it. I've added this task:");
                     System.out.println("  " + tasks.get(tasks.size() - 1));
                     System.out.println("Now you have " + tasks.size() + " tasks in the list.");
@@ -152,7 +152,7 @@ public class Jeff {
                     if (taskNumber < 1 || taskNumber > tasks.size()) {
                         System.out.println("That task number does not exist.");
                     } else {
-                        Task removedTask = tasks.remove(taskNumber - 1);
+                        Task removedTask = tasks.delete(taskNumber - 1);
                         saveTasks(tasks);
                         System.out.println("Noted. I've removed this task:");
                         System.out.println("  " + removedTask);
@@ -172,9 +172,9 @@ public class Jeff {
         scanner.close();
     }
 
-    private static void saveTasks(ArrayList<Task> tasks) {
+    private static void saveTasks(TaskList tasks) {
         try {
-            Storage.saveTasks(tasks);
+            Storage.saveTasks(tasks.getAllTasks());
         } catch (IOException e) {
             System.out.println("Unable to save tasks.");
         }
