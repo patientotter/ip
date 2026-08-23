@@ -1,64 +1,53 @@
 import java.io.IOException;
-import java.util.Scanner;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
 public class Jeff {
     public static void main(String[] args) {
-        String banner = "     _ _____ _____ _____ \n"
-                + "    | | ____|  ___|  ___|\n"
-                + " _  | |  _| | |_  | |_   \n"
-                + "| |_| | |___|  _| |  _|  \n"
-                + " \\___/|_____|_|   |_|    \n";
-
-        System.out.println("____________________________________________________________");
-        System.out.print(banner);
-        System.out.println("Hello! I'm Jeff.");
-        System.out.println("What can I do for you?");
-        System.out.println("____________________________________________________________");
+        Ui ui = new Ui();
+        ui.showWelcome();
 
         TaskList tasks;
 
         try {
             tasks = new TaskList(Storage.loadTasks());
         } catch (IOException e) {
-            System.out.println("Unable to load saved tasks. Starting with an empty list.");
+            ui.showMessage("Unable to load saved tasks. Starting with an empty list.");
             tasks = new TaskList();
         }
 
-        Scanner scanner = new Scanner(System.in);
         while (true) {
-            String input = scanner.nextLine();
+            String input = ui.readCommand();
 
-            System.out.println("____________________________________________________________");
+            ui.showLine();
 
             if (input.equals("bye")) {
                 //says goodbye (task 0)
-                System.out.println("Bye. Hope to see you again soon!");
-                System.out.println("____________________________________________________________");
+                ui.showGoodbye();
+                ui.showLine();
                 break;
             } else if (input.equals("list")) {
                 //task 4
-                System.out.println("Here are the tasks in your list:");
+                ui.showMessage("Here are the tasks in your list:");
                 for (int i = 0; i < tasks.size(); i++) {
-                    System.out.println(" " + (i + 1) + "." + tasks.get(i));
+                    ui.showMessage(" " + (i + 1) + "." + tasks.get(i));
                 }
             } else if (input.startsWith("mark ")) {
                 // marks item as done
                 try {
                     int taskNumber = Integer.parseInt(input.substring(5).trim());
                     if (taskNumber < 1 || taskNumber > tasks.size()) {
-                        System.out.println("OOPS! That task number does not exist.");
+                        ui.showMessage("OOPS! That task number does not exist.");
                     } else {
                         Task task = tasks.get(taskNumber - 1);
                         task.markAsDone();
-                        saveTasks(tasks);
+                        saveTasks(tasks, ui);
 
-                        System.out.println("Nice! I've marked this task as done:");
-                        System.out.println("  " + task.getStatus() + " " + task.getDesc());
+                        ui.showMessage("Nice! I've marked this task as done:");
+                        ui.showMessage("  " + task.getStatus() + " " + task.getDesc());
                     }
                 } catch (NumberFormatException e) {
-                    System.out.println("Please enter a valid task number.");
+                    ui.showMessage("Please enter a valid task number.");
                 }
             } else if (input.startsWith("unmark ")) {
                 // marks item as undone
@@ -66,55 +55,55 @@ public class Jeff {
                     int taskNumber = Integer.parseInt(input.substring(7).trim());
 
                     if (taskNumber < 1 || taskNumber > tasks.size()) {
-                        System.out.println("That task number does not exist.");
+                        ui.showMessage("That task number does not exist.");
                     } else {
                         Task task = tasks.get(taskNumber - 1);
                         task.unmarkAsDone();
-                        saveTasks(tasks);
+                        saveTasks(tasks, ui);
 
-                        System.out.println("I've marked this task as undone:");
-                        System.out.println("  " + task.getStatus() + " " + task.getDesc());
+                        ui.showMessage("I've marked this task as undone:");
+                        ui.showMessage("  " + task.getStatus() + " " + task.getDesc());
                     }
                 } catch (NumberFormatException e) {
-                    System.out.println("Please enter a valid task number.");
+                    ui.showMessage("Please enter a valid task number.");
                 }
             } else if (input.startsWith("todo")) {
                 //mark as todo
                 String description = input.substring(4).trim();
                 if (description.isEmpty()) {
-                    System.out.println("Missing description.");
+                    ui.showMessage("Missing description.");
                 } else {
                     tasks.add(new Todo(description));
-                    saveTasks(tasks);
-                    System.out.println("Got it. I've added this task:");
-                    System.out.println("  " + tasks.get(tasks.size() - 1));
-                    System.out.println("Now you have " + tasks.size() + " tasks in the list.");
+                    saveTasks(tasks, ui);
+                    ui.showMessage("Got it. I've added this task:");
+                    ui.showMessage("  " + tasks.get(tasks.size() - 1));
+                    ui.showMessage("Now you have " + tasks.size() + " tasks in the list.");
                 }
             } else if (input.startsWith("deadline ")) {
                 String remaining = input.substring(9).trim();
                 int separator = remaining.indexOf(" /by ");
 
                 if (separator == -1) {
-                    System.out.println("A deadline must use: deadline <description> /by <date>");
+                    ui.showMessage("A deadline must use: deadline <description> /by <date>");
                 } else {
                     String description = remaining.substring(0, separator).trim();
                     String by = remaining.substring(separator + 5).trim();
 
                     if (description.isEmpty()) {
-                        System.out.println("A deadline needs a description.");
+                        ui.showMessage("A deadline needs a description.");
                     } else if (by.isEmpty()) {
-                        System.out.println("A deadline needs a date.");
+                        ui.showMessage("A deadline needs a date.");
                     } else {
                         try {
                             LocalDate date = LocalDate.parse(by);
                             tasks.add(new Deadline(description, date));
-                            saveTasks(tasks);
+                            saveTasks(tasks, ui);
 
-                            System.out.println("Got it. I've added this task:");
-                            System.out.println("  " + tasks.get(tasks.size() - 1));
-                            System.out.println("Now you have " + tasks.size() + " tasks in the list.");
+                            ui.showMessage("Got it. I've added this task:");
+                            ui.showMessage("  " + tasks.get(tasks.size() - 1));
+                            ui.showMessage("Now you have " + tasks.size() + " tasks in the list.");
                         } catch (DateTimeParseException e) {
-                            System.out.println("Please enter the date in YYYY-MM-DD format.");
+                            ui.showMessage("Please enter the date in YYYY-MM-DD format.");
                         }
                     }
                 }
@@ -125,24 +114,24 @@ public class Jeff {
                 int toSeparator = remaining.indexOf(" /to ");
 
                 if (fromSeparator == -1 || toSeparator == -1 || fromSeparator >= toSeparator) {
-                    System.out.println("An event must use: event <description> /from <time> /to <time>");
+                    ui.showMessage("An event must use: event <description> /from <time> /to <time>");
                 } else {
                     String description = remaining.substring(0, fromSeparator).trim();
                     String from = remaining.substring(fromSeparator + 7, toSeparator).trim();
                     String to = remaining.substring(toSeparator + 5).trim();
 
                     if (description.isEmpty()) {
-                        System.out.println("An event needs a description.");
+                        ui.showMessage("An event needs a description.");
                     } else if (from.isEmpty()) {
-                        System.out.println("An event needs a start time.");
+                        ui.showMessage("An event needs a start time.");
                     } else if (to.isEmpty()) {
-                        System.out.println("An event needs an end time.");
+                        ui.showMessage("An event needs an end time.");
                     } else {
                         tasks.add(new Event(description, from, to));
-                        saveTasks(tasks);
-                        System.out.println("Got it. I've added this task:");
-                        System.out.println("  " + tasks.get(tasks.size() - 1));
-                        System.out.println("Now you have " + tasks.size() + " tasks in the list.");
+                        saveTasks(tasks, ui);
+                        ui.showMessage("Got it. I've added this task:");
+                        ui.showMessage("  " + tasks.get(tasks.size() - 1));
+                        ui.showMessage("Now you have " + tasks.size() + " tasks in the list.");
                     }
                 }
             } else if (input.startsWith("delete ")) {
@@ -150,33 +139,33 @@ public class Jeff {
                     int taskNumber = Integer.parseInt(input.substring(7).trim());
 
                     if (taskNumber < 1 || taskNumber > tasks.size()) {
-                        System.out.println("That task number does not exist.");
+                        ui.showMessage("That task number does not exist.");
                     } else {
                         Task removedTask = tasks.delete(taskNumber - 1);
-                        saveTasks(tasks);
-                        System.out.println("Noted. I've removed this task:");
-                        System.out.println("  " + removedTask);
-                        System.out.println("Now you have " + tasks.size() + " tasks in the list.");
+                        saveTasks(tasks, ui);
+                        ui.showMessage("Noted. I've removed this task:");
+                        ui.showMessage("  " + removedTask);
+                        ui.showMessage("Now you have " + tasks.size() + " tasks in the list.");
                     }
 
                 } catch (NumberFormatException e) {
-                    System.out.println("Please enter a valid task number.");
+                    ui.showMessage("Please enter a valid task number.");
                 }
             } else {
-                System.out.println("Invalid command.");
+                ui.showMessage("Invalid command.");
             }
 
-            System.out.println("____________________________________________________________");
+            ui.showLine();
         }
 
-        scanner.close();
+        ui.close();
     }
 
-    private static void saveTasks(TaskList tasks) {
+    private static void saveTasks(TaskList tasks, Ui ui) {
         try {
             Storage.saveTasks(tasks.getAllTasks());
         } catch (IOException e) {
-            System.out.println("Unable to save tasks.");
+            ui.showMessage("Unable to save tasks.");
         }
     }
 }
