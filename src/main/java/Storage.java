@@ -3,6 +3,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 public class Storage {
     private static final Path FILE_PATH = Path.of("data", "duke.txt");
@@ -52,7 +54,7 @@ public class Storage {
                         task = new Todo(parts[2]);
                         break;
                     case "D":
-                        task = new Deadline(parts[2], parts[3]);
+                        task = new Deadline(parts[2], LocalDate.parse(parts[3]));
                         break;
                     case "E":
                         task = new Event(parts[2], parts[3], parts[4]);
@@ -66,7 +68,7 @@ public class Storage {
                 }
 
                 tasks.add(task);
-            } catch (ArrayIndexOutOfBoundsException e) {
+            } catch (ArrayIndexOutOfBoundsException | DateTimeParseException e) {
                 System.out.println("Warning: A corrupted task was skipped.");
             }
         }
