@@ -1,3 +1,5 @@
+package jeff.ui;
+
 import java.util.Scanner;
 
 public class Ui {
@@ -19,7 +21,7 @@ public class Ui {
 
         showLine();
         System.out.print(banner);
-        showMessage("Hello! I'm Jeff.");
+        showMessage("Hello! I'm jeff.Jeff.");
         showMessage("What can I do for you?");
         showLine();
     }
