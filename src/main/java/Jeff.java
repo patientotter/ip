@@ -3,12 +3,13 @@ import java.io.IOException;
 public class Jeff {
     public static void main(String[] args) {
         Ui ui = new Ui();
+        Storage storage = new Storage("data/duke.txt");
         ui.showWelcome();
 
         TaskList tasks;
 
         try {
-            tasks = new TaskList(Storage.loadTasks());
+            tasks = new TaskList(storage.loadTasks());
         } catch (IOException e) {
             ui.showMessage("Unable to load saved tasks. Starting with an empty list.");
             tasks = new TaskList();
@@ -40,7 +41,7 @@ public class Jeff {
                     } else {
                         Task task = tasks.get(taskNumber - 1);
                         task.markAsDone();
-                        saveTasks(tasks, ui);
+                        saveTasks(tasks, ui, storage);
 
                         ui.showMessage("Nice! I've marked this task as done:");
                         ui.showMessage("  " + task.getStatus()
@@ -58,7 +59,7 @@ public class Jeff {
                     } else {
                         Task task = tasks.get(taskNumber - 1);
                         task.unmarkAsDone();
-                        saveTasks(tasks, ui);
+                        saveTasks(tasks, ui, storage);
 
                         ui.showMessage("I've marked this task as undone:");
                         ui.showMessage("  " + task.getStatus()
@@ -71,7 +72,7 @@ public class Jeff {
                 try {
                     Todo todo = Parser.parseTodo(input);
                     tasks.add(todo);
-                    saveTasks(tasks, ui);
+                    saveTasks(tasks, ui, storage);
 
                     ui.showMessage("Got it. I've added this task:");
                     ui.showMessage("  " + todo);
@@ -84,7 +85,7 @@ public class Jeff {
                 try {
                     Deadline deadline = Parser.parseDeadline(input);
                     tasks.add(deadline);
-                    saveTasks(tasks, ui);
+                    saveTasks(tasks, ui, storage);
 
                     ui.showMessage("Got it. I've added this task:");
                     ui.showMessage("  " + deadline);
@@ -97,7 +98,7 @@ public class Jeff {
                 try {
                     Event event = Parser.parseEvent(input);
                     tasks.add(event);
-                    saveTasks(tasks, ui);
+                    saveTasks(tasks, ui, storage);
 
                     ui.showMessage("Got it. I've added this task:");
                     ui.showMessage("  " + event);
@@ -114,7 +115,7 @@ public class Jeff {
                         ui.showMessage("That task number does not exist.");
                     } else {
                         Task removedTask = tasks.delete(taskNumber - 1);
-                        saveTasks(tasks, ui);
+                        saveTasks(tasks, ui, storage);
 
                         ui.showMessage("Noted. I've removed this task:");
                         ui.showMessage("  " + removedTask);
@@ -134,9 +135,9 @@ public class Jeff {
         ui.close();
     }
 
-    private static void saveTasks(TaskList tasks, Ui ui) {
+    private static void saveTasks(TaskList tasks, Ui ui, Storage storage) {
         try {
-            Storage.saveTasks(tasks.getAllTasks());
+            storage.saveTasks(tasks.getAllTasks());
         } catch (IOException e) {
             ui.showMessage("Unable to save tasks.");
         }
