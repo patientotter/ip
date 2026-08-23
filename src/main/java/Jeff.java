@@ -1,6 +1,8 @@
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 public class Jeff {
     public static void main(String[] args) {
@@ -103,10 +105,17 @@ public class Jeff {
                     } else if (by.isEmpty()) {
                         System.out.println("A deadline needs a date.");
                     } else {
-                        tasks.add(new Deadline(description, by));
-                        System.out.println("Got it. I've added this task:");
-                        System.out.println("  " + tasks.get(tasks.size() - 1));
-                        System.out.println("Now you have " + tasks.size() + " tasks in the list.");
+                        try {
+                            LocalDate date = LocalDate.parse(by);
+                            tasks.add(new Deadline(description, date));
+                            saveTasks(tasks);
+
+                            System.out.println("Got it. I've added this task:");
+                            System.out.println("  " + tasks.get(tasks.size() - 1));
+                            System.out.println("Now you have " + tasks.size() + " tasks in the list.");
+                        } catch (DateTimeParseException e) {
+                            System.out.println("Please enter the date in YYYY-MM-DD format.");
+                        }
                     }
                 }
             } else if (input.startsWith("event ")) {
