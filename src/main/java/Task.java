@@ -29,4 +29,8 @@ public class Task {
     public String toString() {
         return getStatus() + " " + description;
     }
+
+    public boolean isDone() {
+        return isDone;
+    }
 }

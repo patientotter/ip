@@ -1,4 +1,4 @@
-import java.util.Scanner;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -16,7 +16,15 @@ public class Jeff {
         System.out.println("What can I do for you?");
         System.out.println("____________________________________________________________");
 
-        ArrayList<Task> tasks = new ArrayList<>();
+        ArrayList<Task> tasks;
+
+        try {
+            tasks = Storage.loadTasks();
+        } catch (IOException e) {
+            System.out.println("Unable to load saved tasks. Starting with an empty list.");
+            tasks = new ArrayList<>();
+        }
+
         Scanner scanner = new Scanner(System.in);
         while (true) {
             String input = scanner.nextLine();
@@ -43,6 +51,7 @@ public class Jeff {
                     } else {
                         Task task = tasks.get(taskNumber - 1);
                         task.markAsDone();
+                        saveTasks(tasks);
 
                         System.out.println("Nice! I've marked this task as done:");
                         System.out.println("  " + task.getStatus() + " " + task.getDesc());
@@ -60,6 +69,7 @@ public class Jeff {
                     } else {
                         Task task = tasks.get(taskNumber - 1);
                         task.unmarkAsDone();
+                        saveTasks(tasks);
 
                         System.out.println("I've marked this task as undone:");
                         System.out.println("  " + task.getStatus() + " " + task.getDesc());
@@ -120,6 +130,7 @@ public class Jeff {
                         System.out.println("An event needs an end time.");
                     } else {
                         tasks.add(new Event(description, from, to));
+                        saveTasks(tasks);
                         System.out.println("Got it. I've added this task:");
                         System.out.println("  " + tasks.get(tasks.size() - 1));
                         System.out.println("Now you have " + tasks.size() + " tasks in the list.");
@@ -133,6 +144,7 @@ public class Jeff {
                         System.out.println("That task number does not exist.");
                     } else {
                         Task removedTask = tasks.remove(taskNumber - 1);
+                        saveTasks(tasks);
                         System.out.println("Noted. I've removed this task:");
                         System.out.println("  " + removedTask);
                         System.out.println("Now you have " + tasks.size() + " tasks in the list.");
@@ -149,5 +161,13 @@ public class Jeff {
         }
 
         scanner.close();
+    }
+
+    private static void saveTasks(ArrayList<Task> tasks) {
+        try {
+            Storage.saveTasks(tasks);
+        } catch (IOException e) {
+            System.out.println("Unable to save tasks.");
+        }
     }
 }
