@@ -46,7 +46,7 @@ public class Parser {
 
     public static Deadline parseDeadline(String input) {
         String remaining = input.substring("deadline".length()).trim();
-        int separator = remaining.indexOf(" /by ");
+        int separator = remaining.indexOf("/by");
 
         if (separator == -1) {
             throw new IllegalArgumentException(
@@ -54,7 +54,7 @@ public class Parser {
         }
 
         String description = remaining.substring(0, separator).trim();
-        String by = remaining.substring(separator + 5).trim();
+        String by = remaining.substring(separator + 3).trim();
 
         if (description.isEmpty()) {
             throw new IllegalArgumentException(
