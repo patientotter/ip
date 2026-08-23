@@ -1,6 +1,4 @@
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 
 public class Jeff {
     public static void main(String[] args) {
@@ -18,10 +16,11 @@ public class Jeff {
 
         while (true) {
             String input = ui.readCommand();
+            String command = Parser.getCommandWord(input);
 
             ui.showLine();
 
-            if (input.equals("bye")) {
+            if (command.equals("bye")) {
                 //says goodbye (task 0)
                 ui.showGoodbye();
                 ui.showLine();
@@ -32,10 +31,10 @@ public class Jeff {
                 for (int i = 0; i < tasks.size(); i++) {
                     ui.showMessage(" " + (i + 1) + "." + tasks.get(i));
                 }
-            } else if (input.startsWith("mark ")) {
-                // marks item as done
+            } else if (command.equals("mark")) {
                 try {
-                    int taskNumber = Integer.parseInt(input.substring(5).trim());
+                    int taskNumber = Parser.parseTaskNumber(input);
+
                     if (taskNumber < 1 || taskNumber > tasks.size()) {
                         ui.showMessage("OOPS! That task number does not exist.");
                     } else {
@@ -44,15 +43,15 @@ public class Jeff {
                         saveTasks(tasks, ui);
 
                         ui.showMessage("Nice! I've marked this task as done:");
-                        ui.showMessage("  " + task.getStatus() + " " + task.getDesc());
+                        ui.showMessage("  " + task.getStatus()
+                                + " " + task.getDesc());
                     }
-                } catch (NumberFormatException e) {
-                    ui.showMessage("Please enter a valid task number.");
+                } catch (IllegalArgumentException e) {
+                    ui.showMessage(e.getMessage());
                 }
-            } else if (input.startsWith("unmark ")) {
-                // marks item as undone
+            } else if (command.equals("unmark")) {
                 try {
-                    int taskNumber = Integer.parseInt(input.substring(7).trim());
+                    int taskNumber = Parser.parseTaskNumber(input);
 
                     if (taskNumber < 1 || taskNumber > tasks.size()) {
                         ui.showMessage("That task number does not exist.");
@@ -62,94 +61,68 @@ public class Jeff {
                         saveTasks(tasks, ui);
 
                         ui.showMessage("I've marked this task as undone:");
-                        ui.showMessage("  " + task.getStatus() + " " + task.getDesc());
+                        ui.showMessage("  " + task.getStatus()
+                                + " " + task.getDesc());
                     }
-                } catch (NumberFormatException e) {
-                    ui.showMessage("Please enter a valid task number.");
+                } catch (IllegalArgumentException e) {
+                    ui.showMessage(e.getMessage());
                 }
-            } else if (input.startsWith("todo")) {
-                //mark as todo
-                String description = input.substring(4).trim();
-                if (description.isEmpty()) {
-                    ui.showMessage("Missing description.");
-                } else {
-                    tasks.add(new Todo(description));
-                    saveTasks(tasks, ui);
-                    ui.showMessage("Got it. I've added this task:");
-                    ui.showMessage("  " + tasks.get(tasks.size() - 1));
-                    ui.showMessage("Now you have " + tasks.size() + " tasks in the list.");
-                }
-            } else if (input.startsWith("deadline ")) {
-                String remaining = input.substring(9).trim();
-                int separator = remaining.indexOf(" /by ");
-
-                if (separator == -1) {
-                    ui.showMessage("A deadline must use: deadline <description> /by <date>");
-                } else {
-                    String description = remaining.substring(0, separator).trim();
-                    String by = remaining.substring(separator + 5).trim();
-
-                    if (description.isEmpty()) {
-                        ui.showMessage("A deadline needs a description.");
-                    } else if (by.isEmpty()) {
-                        ui.showMessage("A deadline needs a date.");
-                    } else {
-                        try {
-                            LocalDate date = LocalDate.parse(by);
-                            tasks.add(new Deadline(description, date));
-                            saveTasks(tasks, ui);
-
-                            ui.showMessage("Got it. I've added this task:");
-                            ui.showMessage("  " + tasks.get(tasks.size() - 1));
-                            ui.showMessage("Now you have " + tasks.size() + " tasks in the list.");
-                        } catch (DateTimeParseException e) {
-                            ui.showMessage("Please enter the date in YYYY-MM-DD format.");
-                        }
-                    }
-                }
-            } else if (input.startsWith("event ")) {
-                String remaining = input.substring(6).trim();
-
-                int fromSeparator = remaining.indexOf(" /from ");
-                int toSeparator = remaining.indexOf(" /to ");
-
-                if (fromSeparator == -1 || toSeparator == -1 || fromSeparator >= toSeparator) {
-                    ui.showMessage("An event must use: event <description> /from <time> /to <time>");
-                } else {
-                    String description = remaining.substring(0, fromSeparator).trim();
-                    String from = remaining.substring(fromSeparator + 7, toSeparator).trim();
-                    String to = remaining.substring(toSeparator + 5).trim();
-
-                    if (description.isEmpty()) {
-                        ui.showMessage("An event needs a description.");
-                    } else if (from.isEmpty()) {
-                        ui.showMessage("An event needs a start time.");
-                    } else if (to.isEmpty()) {
-                        ui.showMessage("An event needs an end time.");
-                    } else {
-                        tasks.add(new Event(description, from, to));
-                        saveTasks(tasks, ui);
-                        ui.showMessage("Got it. I've added this task:");
-                        ui.showMessage("  " + tasks.get(tasks.size() - 1));
-                        ui.showMessage("Now you have " + tasks.size() + " tasks in the list.");
-                    }
-                }
-            } else if (input.startsWith("delete ")) {
+            } else if (command.equals("todo")) {
                 try {
-                    int taskNumber = Integer.parseInt(input.substring(7).trim());
+                    Todo todo = Parser.parseTodo(input);
+                    tasks.add(todo);
+                    saveTasks(tasks, ui);
+
+                    ui.showMessage("Got it. I've added this task:");
+                    ui.showMessage("  " + todo);
+                    ui.showMessage("Now you have " + tasks.size()
+                            + " tasks in the list.");
+                } catch (IllegalArgumentException e) {
+                    ui.showMessage(e.getMessage());
+                }
+            } else if (command.equals("deadline")) {
+                try {
+                    Deadline deadline = Parser.parseDeadline(input);
+                    tasks.add(deadline);
+                    saveTasks(tasks, ui);
+
+                    ui.showMessage("Got it. I've added this task:");
+                    ui.showMessage("  " + deadline);
+                    ui.showMessage("Now you have " + tasks.size()
+                            + " tasks in the list.");
+                } catch (IllegalArgumentException e) {
+                    ui.showMessage(e.getMessage());
+                }
+            } else if (command.equals("event")) {
+                try {
+                    Event event = Parser.parseEvent(input);
+                    tasks.add(event);
+                    saveTasks(tasks, ui);
+
+                    ui.showMessage("Got it. I've added this task:");
+                    ui.showMessage("  " + event);
+                    ui.showMessage("Now you have " + tasks.size()
+                            + " tasks in the list.");
+                } catch (IllegalArgumentException e) {
+                    ui.showMessage(e.getMessage());
+                }
+            } else if (command.equals("delete")) {
+                try {
+                    int taskNumber = Parser.parseTaskNumber(input);
 
                     if (taskNumber < 1 || taskNumber > tasks.size()) {
                         ui.showMessage("That task number does not exist.");
                     } else {
                         Task removedTask = tasks.delete(taskNumber - 1);
                         saveTasks(tasks, ui);
+
                         ui.showMessage("Noted. I've removed this task:");
                         ui.showMessage("  " + removedTask);
-                        ui.showMessage("Now you have " + tasks.size() + " tasks in the list.");
+                        ui.showMessage("Now you have " + tasks.size()
+                                + " tasks in the list.");
                     }
-
-                } catch (NumberFormatException e) {
-                    ui.showMessage("Please enter a valid task number.");
+                } catch (IllegalArgumentException e) {
+                    ui.showMessage(e.getMessage());
                 }
             } else {
                 ui.showMessage("Invalid command.");
