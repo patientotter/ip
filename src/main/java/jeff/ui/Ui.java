@@ -1,7 +1,9 @@
 package jeff.ui;
 
 import java.util.Scanner;
-
+/**
+ * Handles interactions between Jeff and the user.
+ */
 public class Ui {
     private static final String LINE =
             "____________________________________________________________";

@@ -12,7 +12,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * Loads tasks from and saves tasks to the hard disk.
+ */
 public class Storage {
     private final Path filePath;
 
@@ -52,6 +54,12 @@ public class Storage {
         Files.write(filePath, lines);
     }
 
+    /**
+     * Loads tasks from the configured data file.
+     *
+     * @return tasks loaded from the file
+     * @throws IOException if the file cannot be read
+     */
     public ArrayList<Task> loadTasks() throws IOException {
         ArrayList<Task> tasks = new ArrayList<>();
 

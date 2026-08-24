@@ -7,6 +7,9 @@ import jeff.ui.Ui;
 
 import java.io.IOException;
 
+/**
+ * Runs the Jeff chatbot and coordinates its main components.
+ */
 public class Jeff {
     private final Storage storage;
     private final TaskList tasks;

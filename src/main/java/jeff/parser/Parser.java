@@ -6,7 +6,9 @@ import jeff.task.Todo;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-
+/**
+ * Parses user input into commands and task information.
+ */
 public class Parser {
 
     public static String getCommandWord(String input) {
