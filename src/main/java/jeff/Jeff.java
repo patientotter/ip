@@ -8,7 +8,7 @@ import jeff.task.Task;
 import jeff.task.TaskList;
 import jeff.task.Todo;
 import jeff.ui.Ui;
-
+import java.util.ArrayList;
 import java.io.IOException;
 
 /**
@@ -64,6 +64,8 @@ public class Jeff {
                 addEvent(input);
             } else if (command.equals("delete")) {
                 deleteTask(input);
+            } else if (command.equals("find")) {
+                findTasks(input);
             } else {
                 ui.showMessage("Invalid command.");
             }
@@ -208,6 +210,22 @@ public class Jeff {
             storage.saveTasks(tasks.getAllTasks());
         } catch (IOException e) {
             ui.showMessage("Unable to save tasks.");
+        }
+    }
+
+    private void findTasks(String input) {
+        try {
+            String keyword = Parser.parseFindKeyword(input);
+            ArrayList<Task> matchingTasks = tasks.find(keyword);
+
+            ui.showMessage("Here are the matching tasks in your list:");
+
+            for (int i = 0; i < matchingTasks.size(); i++) {
+                ui.showMessage(
+                        " " + (i + 1) + "." + matchingTasks.get(i));
+            }
+        } catch (IllegalArgumentException e) {
+            ui.showMessage(e.getMessage());
         }
     }
 

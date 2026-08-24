@@ -1,6 +1,8 @@
 package jeff.task;
 
 import java.util.ArrayList;
+import java.util.Locale;
+
 /**
  * Stores and manages the user's tasks.
  */
@@ -67,5 +69,28 @@ public class TaskList {
      */
     public ArrayList<Task> getAllTasks() {
         return tasks;
+    }
+
+    /**
+     * Finds tasks whose descriptions contain the specified keyword.
+     * The search is case-insensitive.
+     *
+     * @param keyword keyword to search for
+     * @return tasks with descriptions containing the keyword
+     */
+    public ArrayList<Task> find(String keyword) {
+        ArrayList<Task> matchingTasks = new ArrayList<>();
+        String normalizedKeyword = keyword.toLowerCase(Locale.ROOT);
+
+        for (Task task : tasks) {
+            String normalizedDescription =
+                    task.getDesc().toLowerCase(Locale.ROOT);
+
+            if (normalizedDescription.contains(normalizedKeyword)) {
+                matchingTasks.add(task);
+            }
+        }
+
+        return matchingTasks;
     }
 }

@@ -74,4 +74,20 @@ public class ParserTest {
                 "Please enter the date in YYYY-MM-DD format.",
                 exception.getMessage());
     }
+
+    @Test
+    public void parseFindKeyword_validInput_returnsKeyword() {
+        assertEquals("book", Parser.parseFindKeyword("find book"));
+    }
+
+    @Test
+    public void parseFindKeyword_missingKeyword_exceptionThrown() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> Parser.parseFindKeyword("find"));
+
+        assertEquals(
+                "A find command needs a keyword.",
+                exception.getMessage());
+    }
 }
