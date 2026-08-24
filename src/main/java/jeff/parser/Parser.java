@@ -112,4 +112,22 @@ public class Parser {
 
         return new Event(description, from, to);
     }
+
+    /**
+     * Extracts the keyword from a find command.
+     *
+     * @param input full user input
+     * @return keyword to search for
+     * @throws IllegalArgumentException if no keyword was provided
+     */
+    public static String parseFindKeyword(String input) {
+        String keyword = input.substring("find".length()).trim();
+
+        if (keyword.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "A find command needs a keyword.");
+        }
+
+        return keyword;
+    }
 }
