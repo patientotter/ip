@@ -2,7 +2,11 @@ package jeff;
 
 import jeff.parser.Parser;
 import jeff.storage.Storage;
-import jeff.task.*;
+import jeff.task.Deadline;
+import jeff.task.Event;
+import jeff.task.Task;
+import jeff.task.TaskList;
+import jeff.task.Todo;
 import jeff.ui.Ui;
 
 import java.io.IOException;
