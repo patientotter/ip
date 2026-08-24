@@ -3,12 +3,10 @@ package jeff.task;
 public class Task {
     protected String description;
     protected boolean isDone;
-    protected boolean istodo;
 
     public Task(String description) {
         this.description = description;
         this.isDone = false;
-        this.istodo = false;
     }
 
     public String getStatus() {
