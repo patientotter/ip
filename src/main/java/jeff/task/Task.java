@@ -4,7 +4,9 @@ public class Task {
     protected String description;
     protected boolean isDone;
     protected boolean istodo;
-
+    /**
+     * Represents a task that can be marked as completed.
+     */
     public Task(String description) {
         this.description = description;
         this.isDone = false;

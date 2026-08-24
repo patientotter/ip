@@ -1,5 +1,7 @@
 package jeff.task;
-
+/**
+ * Represents an event with a starting and ending time.
+ */
 public class Event extends Task {
 
     protected String from;
