@@ -1,31 +1,52 @@
 package jeff.task;
 
+/**
+ * Represents a task that can be marked as completed.
+ */
 public class Task {
     protected String description;
     protected boolean isDone;
-    protected boolean istodo;
+
     /**
-     * Represents a task that can be marked as completed.
+     * Creates an incomplete task with the specified description.
+     *
+     * @param description Description of the task.
      */
     public Task(String description) {
         this.description = description;
         this.isDone = false;
     }
 
+    /**
+     * Returns the task's completion-status icon.
+     *
+     * @return Completion-status icon.
+     */
     public String getStatus() {
-        return (isDone ? "[X] " : "[ ] ");
+        return isDone ? "[X] " : "[ ] ";
     }
 
-    public String getDesc() {
-        return this.description;
+    /**
+     * Returns the task description.
+     *
+     * @return Task description.
+     */
+    public String getDescription() {
+        return description;
     }
 
+    /**
+     * Marks the task as completed.
+     */
     public void markAsDone() {
-        this.isDone = true;
+        isDone = true;
     }
 
+    /**
+     * Marks the task as incomplete.
+     */
     public void unmarkAsDone() {
-        this.isDone = false;
+        isDone = false;
     }
 
     @Override
@@ -33,6 +54,11 @@ public class Task {
         return getStatus() + " " + description;
     }
 
+    /**
+     * Returns whether the task is completed.
+     *
+     * @return True if the task is completed.
+     */
     public boolean isDone() {
         return isDone;
     }

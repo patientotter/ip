@@ -36,18 +36,18 @@ public class Storage {
 
             if (task instanceof Todo) {
                 lines.add("T | " + status
-                        + " | " + task.getDesc());
+                        + " | " + task.getDescription());
             } else if (task instanceof Deadline) {
                 Deadline deadline = (Deadline) task;
                 lines.add("D | " + status
-                        + " | " + deadline.getDesc()
-                        + " | " + deadline.getBy());
+                        + " | " + deadline.getDescription()
+                        + " | " + deadline.getDueDate());
             } else if (task instanceof Event) {
                 Event event = (Event) task;
                 lines.add("E | " + status
-                        + " | " + event.getDesc()
-                        + " | " + event.getFrom()
-                        + " | " + event.getTo());
+                        + " | " + event.getDescription()
+                        + " | " + event.getStartTime()
+                        + " | " + event.getEndTime());
             }
         }
 

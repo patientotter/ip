@@ -39,7 +39,7 @@ public class TaskList {
      * @param index zero-based index of the task
      * @return task at the specified index
      */
-    public Task get(int index) {
+    public Task getTask(int index) {
         return tasks.get(index);
     }
 
@@ -48,7 +48,7 @@ public class TaskList {
      *
      * @param task task to add
      */
-    public void add(Task task) {
+    public void addTask(Task task) {
         tasks.add(task);
     }
 
@@ -58,7 +58,7 @@ public class TaskList {
      * @param index zero-based index of the task
      * @return deleted task
      */
-    public Task delete(int index) {
+    public Task deleteTask(int index) {
         return tasks.remove(index);
     }
 
@@ -67,7 +67,7 @@ public class TaskList {
      *
      * @return underlying collection of tasks
      */
-    public ArrayList<Task> getAllTasks() {
+    public ArrayList<Task> getTasks() {
         return tasks;
     }
 
@@ -78,13 +78,13 @@ public class TaskList {
      * @param keyword keyword to search for
      * @return tasks with descriptions containing the keyword
      */
-    public ArrayList<Task> find(String keyword) {
+    public ArrayList<Task> findTasks(String keyword) {
         ArrayList<Task> matchingTasks = new ArrayList<>();
         String normalizedKeyword = keyword.toLowerCase(Locale.ROOT);
 
         for (Task task : tasks) {
             String normalizedDescription =
-                    task.getDesc().toLowerCase(Locale.ROOT);
+                    task.getDescription().toLowerCase(Locale.ROOT);
 
             if (normalizedDescription.contains(normalizedKeyword)) {
                 matchingTasks.add(task);

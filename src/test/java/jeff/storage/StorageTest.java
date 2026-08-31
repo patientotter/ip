@@ -52,23 +52,23 @@ public class StorageTest {
         assertEquals(3, loadedTasks.size());
 
         assertInstanceOf(Todo.class, loadedTasks.get(0));
-        assertEquals("read book", loadedTasks.get(0).getDesc());
+        assertEquals("read book", loadedTasks.get(0).getDescription());
         assertTrue(loadedTasks.get(0).isDone());
 
         assertInstanceOf(Deadline.class, loadedTasks.get(1));
         Deadline loadedDeadline =
                 (Deadline) loadedTasks.get(1);
-        assertEquals("return book", loadedDeadline.getDesc());
+        assertEquals("return book", loadedDeadline.getDescription());
         assertEquals(
                 LocalDate.of(2026, 9, 15),
-                loadedDeadline.getBy());
+                loadedDeadline.getDueDate());
         assertFalse(loadedDeadline.isDone());
 
         assertInstanceOf(Event.class, loadedTasks.get(2));
         Event loadedEvent = (Event) loadedTasks.get(2);
-        assertEquals("project meeting", loadedEvent.getDesc());
-        assertEquals("1400", loadedEvent.getFrom());
-        assertEquals("1600", loadedEvent.getTo());
+        assertEquals("project meeting", loadedEvent.getDescription());
+        assertEquals("1400", loadedEvent.getStartTime());
+        assertEquals("1600", loadedEvent.getEndTime());
     }
 
     @Test

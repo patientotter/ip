@@ -40,34 +40,45 @@ public class Jeff {
     public void run() {
         ui.showWelcome();
 
+        label:
         while (true) {
             String input = ui.readCommand();
             String command = Parser.getCommandWord(input);
 
             ui.showLine();
 
-            if (command.equals("bye")) {
-                ui.showGoodbye();
-                ui.showLine();
-                break;
-            } else if (command.equals("list")) {
-                showTaskList();
-            } else if (command.equals("mark")) {
-                markTask(input);
-            } else if (command.equals("unmark")) {
-                unmarkTask(input);
-            } else if (command.equals("todo")) {
-                addTodo(input);
-            } else if (command.equals("deadline")) {
-                addDeadline(input);
-            } else if (command.equals("event")) {
-                addEvent(input);
-            } else if (command.equals("delete")) {
-                deleteTask(input);
-            } else if (command.equals("find")) {
-                findTasks(input);
-            } else {
-                ui.showMessage("Invalid command.");
+            switch (command) {
+                case "bye":
+                    ui.showGoodbye();
+                    ui.showLine();
+                    break label;
+                case "list":
+                    showTaskList();
+                    break;
+                case "mark":
+                    markTask(input);
+                    break;
+                case "unmark":
+                    unmarkTask(input);
+                    break;
+                case "todo":
+                    addTodo(input);
+                    break;
+                case "deadline":
+                    addDeadline(input);
+                    break;
+                case "event":
+                    addEvent(input);
+                    break;
+                case "delete":
+                    deleteTask(input);
+                    break;
+                case "find":
+                    findTasks(input);
+                    break;
+                default:
+                    ui.showMessage("Invalid command.");
+                    break;
             }
 
             ui.showLine();
@@ -80,7 +91,7 @@ public class Jeff {
         ui.showMessage("Here are the tasks in your list:");
 
         for (int i = 0; i < tasks.size(); i++) {
-            ui.showMessage(" " + (i + 1) + "." + tasks.get(i));
+            ui.showMessage(" " + (i + 1) + "." + tasks.getTask(i));
         }
     }
 
@@ -94,7 +105,7 @@ public class Jeff {
                 return;
             }
 
-            Task task = tasks.get(taskNumber - 1);
+            Task task = tasks.getTask(taskNumber - 1);
             task.markAsDone();
             saveTasks();
 
@@ -102,7 +113,7 @@ public class Jeff {
                     "Nice! I've marked this task as done:");
             ui.showMessage(
                     "  " + task.getStatus()
-                            + " " + task.getDesc());
+                            + " " + task.getDescription());
         } catch (IllegalArgumentException e) {
             ui.showMessage(e.getMessage());
         }
@@ -118,7 +129,7 @@ public class Jeff {
                 return;
             }
 
-            Task task = tasks.get(taskNumber - 1);
+            Task task = tasks.getTask(taskNumber - 1);
             task.unmarkAsDone();
             saveTasks();
 
@@ -126,7 +137,7 @@ public class Jeff {
                     "I've marked this task as undone:");
             ui.showMessage(
                     "  " + task.getStatus()
-                            + " " + task.getDesc());
+                            + " " + task.getDescription());
         } catch (IllegalArgumentException e) {
             ui.showMessage(e.getMessage());
         }
@@ -135,7 +146,7 @@ public class Jeff {
     private void addTodo(String input) {
         try {
             Todo todo = Parser.parseTodo(input);
-            tasks.add(todo);
+            tasks.addTask(todo);
             saveTasks();
 
             showTaskAdded(todo);
@@ -147,7 +158,7 @@ public class Jeff {
     private void addDeadline(String input) {
         try {
             Deadline deadline = Parser.parseDeadline(input);
-            tasks.add(deadline);
+            tasks.addTask(deadline);
             saveTasks();
 
             showTaskAdded(deadline);
@@ -159,7 +170,7 @@ public class Jeff {
     private void addEvent(String input) {
         try {
             Event event = Parser.parseEvent(input);
-            tasks.add(event);
+            tasks.addTask(event);
             saveTasks();
 
             showTaskAdded(event);
@@ -178,7 +189,7 @@ public class Jeff {
                 return;
             }
 
-            Task removedTask = tasks.delete(taskNumber - 1);
+            Task removedTask = tasks.deleteTask(taskNumber - 1);
             saveTasks();
 
             ui.showMessage("Noted. I've removed this task:");
@@ -207,7 +218,7 @@ public class Jeff {
 
     private void saveTasks() {
         try {
-            storage.saveTasks(tasks.getAllTasks());
+            storage.saveTasks(tasks.getTasks());
         } catch (IOException e) {
             ui.showMessage("Unable to save tasks.");
         }
@@ -216,7 +227,7 @@ public class Jeff {
     private void findTasks(String input) {
         try {
             String keyword = Parser.parseFindKeyword(input);
-            ArrayList<Task> matchingTasks = tasks.find(keyword);
+            ArrayList<Task> matchingTasks = tasks.findTasks(keyword);
 
             ui.showMessage("Here are the matching tasks in your list:");
 

@@ -16,10 +16,10 @@ public class ParserTest {
         Deadline deadline = Parser.parseDeadline(
                 "deadline return book /by 2026-09-15");
 
-        assertEquals("return book", deadline.getDesc());
+        assertEquals("return book", deadline.getDescription());
         assertEquals(
                 LocalDate.of(2026, 9, 15),
-                deadline.getBy());
+                deadline.getDueDate());
     }
 
     @Test
