@@ -22,6 +22,12 @@ public class Storage {
         this.filePath = Path.of(filePath);
     }
 
+    /**
+     * Saves the supplied tasks to the configured data file.
+     *
+     * @param tasks Tasks to save.
+     * @throws IOException If the tasks cannot be saved.
+     */
     public void saveTasks(ArrayList<Task> tasks) throws IOException {
         Path parentDirectory = filePath.getParent();
 

@@ -37,6 +37,9 @@ public class Jeff {
         tasks = loadedTasks;
     }
 
+    /**
+     * Runs the command-processing loop until the user exits the application.
+     */
     public void run() {
         ui.showWelcome();
 
@@ -240,6 +243,11 @@ public class Jeff {
         }
     }
 
+    /**
+     * Starts the Jeff application.
+     *
+     * @param args Command-line arguments, which are not used.
+     */
     public static void main(String[] args) {
         new Jeff("data/duke.txt").run();
     }
