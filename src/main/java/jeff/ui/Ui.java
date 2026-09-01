@@ -10,12 +10,15 @@ public class Ui {
             "____________________________________________________________";
 
     private final Scanner scanner;
+    private final StringBuilder capturedOutput;
+    private boolean isCapturing;
 
     /**
      * Creates a console user interface that reads from standard input.
      */
     public Ui() {
         scanner = new Scanner(System.in);
+        capturedOutput = new StringBuilder();
     }
 
     /**
@@ -30,7 +33,7 @@ public class Ui {
 
         showLine();
         System.out.print(banner);
-        showMessage("Hello! I'm jeff.Jeff.");
+        showMessage("Hello! I'm Jeff.");
         showMessage("What can I do for you?");
         showLine();
     }
@@ -45,12 +48,38 @@ public class Ui {
     }
 
     /**
-     * Shows the specified message.
+     * Shows or captures the specified message.
      *
      * @param message Message to show.
      */
     public void showMessage(String message) {
-        System.out.println(message);
+        if (isCapturing) {
+            if (capturedOutput.length() > 0) {
+                capturedOutput.append(System.lineSeparator());
+            }
+
+            capturedOutput.append(message);
+        } else {
+            System.out.println(message);
+        }
+    }
+
+    /**
+     * Starts collecting displayed messages instead of printing them.
+     */
+    public void startCapturing() {
+        capturedOutput.setLength(0);
+        isCapturing = true;
+    }
+
+    /**
+     * Stops collecting messages and returns the collected output.
+     *
+     * @return Collected messages.
+     */
+    public String stopCapturing() {
+        isCapturing = false;
+        return capturedOutput.toString();
     }
 
     /**

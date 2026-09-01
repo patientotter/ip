@@ -12,7 +12,6 @@ import jeff.task.TaskList;
 import jeff.task.Todo;
 import jeff.ui.Ui;
 
-
 /**
  * Runs the Jeff chatbot and coordinates its main components.
  */
@@ -22,7 +21,9 @@ public class Jeff {
     private final Ui ui;
 
     /**
-     * Creates a Jeff application with its required components.
+     * Creates Jeff using the specified task-storage file.
+     *
+     * @param filePath Path of the task-storage file.
      */
     public Jeff(String filePath) {
         ui = new Ui();
@@ -48,51 +49,73 @@ public class Jeff {
     public void run() {
         ui.showWelcome();
 
-        label:
-        while (true) {
+        boolean isExit = false;
+        while (!isExit) {
             String input = ui.readCommand();
-            String command = Parser.getCommandWord(input);
 
             ui.showLine();
-
-            switch (command) {
-                case "bye":
-                    ui.showGoodbye();
-                    ui.showLine();
-                    break label;
-                case "list":
-                    showTaskList();
-                    break;
-                case "mark":
-                    markTask(input);
-                    break;
-                case "unmark":
-                    unmarkTask(input);
-                    break;
-                case "todo":
-                    addTodo(input);
-                    break;
-                case "deadline":
-                    addDeadline(input);
-                    break;
-                case "event":
-                    addEvent(input);
-                    break;
-                case "delete":
-                    deleteTask(input);
-                    break;
-                case "find":
-                    findTasks(input);
-                    break;
-                default:
-                    ui.showMessage("Invalid command.");
-                    break;
-            }
-
+            isExit = processCommand(input);
             ui.showLine();
         }
 
         ui.close();
+    }
+
+    /**
+     * Returns Jeff's response to a command for use by a graphical interface.
+     *
+     * @param input User command.
+     * @return Jeff's response.
+     */
+    public String getResponse(String input) {
+        ui.startCapturing();
+        processCommand(input);
+        return ui.stopCapturing();
+    }
+
+    /**
+     * Processes one user command.
+     *
+     * @param input User command.
+     * @return True if the user requested to exit.
+     */
+    private boolean processCommand(String input) {
+        String command = Parser.getCommandWord(input);
+
+        switch (command) {
+            case "bye":
+                ui.showGoodbye();
+                return true;
+            case "list":
+                showTaskList();
+                break;
+            case "mark":
+                markTask(input);
+                break;
+            case "unmark":
+                unmarkTask(input);
+                break;
+            case "todo":
+                addTodo(input);
+                break;
+            case "deadline":
+                addDeadline(input);
+                break;
+            case "event":
+                addEvent(input);
+                break;
+            case "delete":
+                deleteTask(input);
+                break;
+            case "find":
+                findTasks(input);
+                break;
+            default:
+                ui.showMessage("Invalid command.");
+                break;
+        }
+
+        return false;
     }
 
     private void showTaskList() {
