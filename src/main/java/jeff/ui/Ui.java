@@ -33,8 +33,9 @@ public class Ui {
 
         showLine();
         System.out.print(banner);
-        showMessage("Hello! I'm Jeff.");
-        showMessage("What can I do for you?");
+        showMessage(
+                "Hello! I'm jeff.Jeff.",
+                "What can I do for you?");
         showLine();
     }
 
@@ -48,19 +49,18 @@ public class Ui {
     }
 
     /**
-     * Shows or captures the specified message.
+     * Shows the specified messages, one message per line.
      *
-     * @param message Message to show.
+     * @param messages Messages to show.
      */
-    public void showMessage(String message) {
-        if (isCapturing) {
-            if (capturedOutput.length() > 0) {
-                capturedOutput.append(System.lineSeparator());
+    public void showMessage(String... messages) {
+        for (String message : messages) {
+            if (isCapturing) {
+                capturedOutput.append(message)
+                        .append(System.lineSeparator());
+            } else {
+                System.out.println(message);
             }
-
-            capturedOutput.append(message);
-        } else {
-            System.out.println(message);
         }
     }
 
