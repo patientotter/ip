@@ -1,10 +1,5 @@
 package jeff.storage;
 
-import jeff.task.Deadline;
-import jeff.task.Event;
-import jeff.task.Task;
-import jeff.task.Todo;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,6 +7,12 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+
+import jeff.task.Deadline;
+import jeff.task.Event;
+import jeff.task.Task;
+import jeff.task.Todo;
+
 /**
  * Loads tasks from and saves tasks to the hard disk.
  */

@@ -1,5 +1,8 @@
 package jeff;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
 import jeff.parser.Parser;
 import jeff.storage.Storage;
 import jeff.task.Deadline;
@@ -8,8 +11,7 @@ import jeff.task.Task;
 import jeff.task.TaskList;
 import jeff.task.Todo;
 import jeff.ui.Ui;
-import java.util.ArrayList;
-import java.io.IOException;
+
 
 /**
  * Runs the Jeff chatbot and coordinates its main components.
@@ -19,6 +21,9 @@ public class Jeff {
     private final TaskList tasks;
     private final Ui ui;
 
+    /**
+     * Creates a Jeff application with its required components.
+     */
     public Jeff(String filePath) {
         ui = new Ui();
         storage = new Storage(filePath);
