@@ -24,11 +24,9 @@ public class ParserTest {
 
     @Test
     public void parseDeadline_missingSeparator_exceptionThrown() {
-        IllegalArgumentException exception =
-                assertThrows(
-                        IllegalArgumentException.class,
-                        () -> Parser.parseDeadline(
-                                "deadline return book 2026-09-15"));
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class, () -> Parser.parseDeadline(
+                        "deadline return book 2026-09-15"));
 
         assertEquals(
                 "A deadline must use: "
@@ -38,11 +36,9 @@ public class ParserTest {
 
     @Test
     public void parseDeadline_missingDescription_exceptionThrown() {
-        IllegalArgumentException exception =
-                assertThrows(
-                        IllegalArgumentException.class,
-                        () -> Parser.parseDeadline(
-                                "deadline /by 2026-09-15"));
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class, () -> Parser.parseDeadline(
+                        "deadline /by 2026-09-15"));
 
         assertEquals(
                 "A deadline needs a description.",
@@ -51,11 +47,9 @@ public class ParserTest {
 
     @Test
     public void parseDeadline_missingDate_exceptionThrown() {
-        IllegalArgumentException exception =
-                assertThrows(
-                        IllegalArgumentException.class,
-                        () -> Parser.parseDeadline(
-                                "deadline return book /by "));
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class, () -> Parser.parseDeadline(
+                        "deadline return book /by "));
 
         assertEquals(
                 "A deadline needs a date.",
@@ -64,11 +58,9 @@ public class ParserTest {
 
     @Test
     public void parseDeadline_invalidDate_exceptionThrown() {
-        IllegalArgumentException exception =
-                assertThrows(
-                        IllegalArgumentException.class,
-                        () -> Parser.parseDeadline(
-                                "deadline return book /by 2026-20-50"));
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class, () -> Parser.parseDeadline(
+                        "deadline return book /by 2026-20-50"));
 
         assertEquals(
                 "Please enter the date in YYYY-MM-DD format.",
@@ -83,8 +75,7 @@ public class ParserTest {
     @Test
     public void parseFindKeyword_missingKeyword_exceptionThrown() {
         IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> Parser.parseFindKeyword("find"));
+                IllegalArgumentException.class, () -> Parser.parseFindKeyword("find"));
 
         assertEquals(
                 "A find command needs a keyword.",
