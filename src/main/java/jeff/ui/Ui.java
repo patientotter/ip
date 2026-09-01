@@ -30,8 +30,9 @@ public class Ui {
 
         showLine();
         System.out.print(banner);
-        showMessage("Hello! I'm jeff.Jeff.");
-        showMessage("What can I do for you?");
+        showMessage(
+                "Hello! I'm jeff.Jeff.",
+                "What can I do for you?");
         showLine();
     }
 
@@ -45,12 +46,14 @@ public class Ui {
     }
 
     /**
-     * Shows the specified message.
+     * Shows the specified messages, one message per line.
      *
-     * @param message Message to show.
+     * @param messages Messages to show.
      */
-    public void showMessage(String message) {
-        System.out.println(message);
+    public void showMessage(String... messages) {
+        for (String message : messages) {
+            System.out.println(message);
+        }
     }
 
     /**
