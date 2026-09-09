@@ -41,6 +41,15 @@ public class MainWindow extends AnchorPane {
      */
     @FXML
     public void initialize() {
+        assert scrollPane != null
+                : "scrollPane was not injected by FXML";
+        assert dialogContainer != null
+                : "dialogContainer was not injected by FXML";
+        assert userInput != null
+                : "userInput was not injected by FXML";
+        assert sendButton != null
+                : "sendButton was not injected by FXML";
+
         scrollPane.vvalueProperty().bind(
                 dialogContainer.heightProperty());
     }
@@ -51,6 +60,7 @@ public class MainWindow extends AnchorPane {
      * @param jeff Jeff instance.
      */
     public void setJeff(Jeff jeff) {
+        assert jeff != null : "Jeff instance must not be null";
         this.jeff = jeff;
 
         dialogContainer.getChildren().add(
