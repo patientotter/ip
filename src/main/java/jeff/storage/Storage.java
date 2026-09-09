@@ -39,26 +39,46 @@ public class Storage {
         ArrayList<String> lines = new ArrayList<>();
 
         for (Task task : tasks) {
-            String status = task.isDone() ? "1" : "0";
+            String serializedTask = serializeTask(task);
 
-            if (task instanceof Todo) {
-                lines.add("T | " + status
-                        + " | " + task.getDescription());
-            } else if (task instanceof Deadline) {
-                Deadline deadline = (Deadline) task;
-                lines.add("D | " + status
-                        + " | " + deadline.getDescription()
-                        + " | " + deadline.getDueDate());
-            } else if (task instanceof Event) {
-                Event event = (Event) task;
-                lines.add("E | " + status
-                        + " | " + event.getDescription()
-                        + " | " + event.getStartTime()
-                        + " | " + event.getEndTime());
+            if (serializedTask != null) {
+                lines.add(serializedTask);
             }
         }
 
         Files.write(filePath, lines);
+    }
+
+    /**
+     * Converts a task into its storage representation.
+     *
+     * @param task Task to serialize.
+     * @return Serialized task, or null for an unsupported task type.
+     */
+    private String serializeTask(Task task) {
+        String status = task.isDone() ? "1" : "0";
+
+        if (task instanceof Todo) {
+            return "T | " + status
+                    + " | " + task.getDescription();
+        }
+
+        if (task instanceof Deadline) {
+            Deadline deadline = (Deadline) task;
+            return "D | " + status
+                    + " | " + deadline.getDescription()
+                    + " | " + deadline.getDueDate();
+        }
+
+        if (task instanceof Event) {
+            Event event = (Event) task;
+            return "E | " + status
+                    + " | " + event.getDescription()
+                    + " | " + event.getStartTime()
+                    + " | " + event.getEndTime();
+        }
+
+        return null;
     }
 
     /**
