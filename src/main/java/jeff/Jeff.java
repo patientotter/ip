@@ -177,10 +177,7 @@ public class Jeff {
     private void addTodo(String input) {
         try {
             Todo todo = Parser.parseTodo(input);
-            tasks.addTask(todo);
-            saveTasks();
-
-            showTaskAdded(todo);
+            addTask(todo);
         } catch (IllegalArgumentException e) {
             ui.showMessage(e.getMessage());
         }
@@ -189,10 +186,7 @@ public class Jeff {
     private void addDeadline(String input) {
         try {
             Deadline deadline = Parser.parseDeadline(input);
-            tasks.addTask(deadline);
-            saveTasks();
-
-            showTaskAdded(deadline);
+            addTask(deadline);
         } catch (IllegalArgumentException e) {
             ui.showMessage(e.getMessage());
         }
@@ -201,13 +195,16 @@ public class Jeff {
     private void addEvent(String input) {
         try {
             Event event = Parser.parseEvent(input);
-            tasks.addTask(event);
-            saveTasks();
-
-            showTaskAdded(event);
+            addTask(event);
         } catch (IllegalArgumentException e) {
             ui.showMessage(e.getMessage());
         }
+    }
+
+    private void addTask(Task task) {
+        tasks.addTask(task);
+        saveTasks();
+        showTaskAdded(task);
     }
 
     private void deleteTask(String input) {
