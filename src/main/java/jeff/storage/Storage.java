@@ -13,10 +13,27 @@ import jeff.task.Event;
 import jeff.task.Task;
 import jeff.task.Todo;
 
+
 /**
  * Loads tasks from and saves tasks to the hard disk.
  */
 public class Storage {
+    private static final String TODO_TYPE_CODE = "T";
+    private static final String DEADLINE_TYPE_CODE = "D";
+    private static final String EVENT_TYPE_CODE = "E";
+
+    private static final String INCOMPLETE_STATUS_CODE = "0";
+    private static final String COMPLETE_STATUS_CODE = "1";
+
+    private static final String FIELD_SEPARATOR = " | ";
+    private static final String FIELD_SEPARATOR_REGEX = " \\| ";
+
+    private static final int TYPE_INDEX = 0;
+    private static final int STATUS_INDEX = 1;
+    private static final int DESCRIPTION_INDEX = 2;
+    private static final int FIRST_DETAIL_INDEX = 3;
+    private static final int SECOND_DETAIL_INDEX = 4;
+
     private final Path filePath;
 
     public Storage(String filePath) {
@@ -56,26 +73,31 @@ public class Storage {
      * @return Serialized task, or null for an unsupported task type.
      */
     private String serializeTask(Task task) {
-        String status = task.isDone() ? "1" : "0";
+        String status = task.isDone()
+                ? COMPLETE_STATUS_CODE
+                : INCOMPLETE_STATUS_CODE;
 
         if (task instanceof Todo) {
-            return "T | " + status
-                    + " | " + task.getDescription();
+            return TODO_TYPE_CODE + FIELD_SEPARATOR
+                    + status + FIELD_SEPARATOR
+                    + task.getDescription();
         }
 
         if (task instanceof Deadline) {
             Deadline deadline = (Deadline) task;
-            return "D | " + status
-                    + " | " + deadline.getDescription()
-                    + " | " + deadline.getDueDate();
+            return DEADLINE_TYPE_CODE + FIELD_SEPARATOR
+                    + status + FIELD_SEPARATOR
+                    + deadline.getDescription() + FIELD_SEPARATOR
+                    + deadline.getDueDate();
         }
 
         if (task instanceof Event) {
             Event event = (Event) task;
-            return "E | " + status
-                    + " | " + event.getDescription()
-                    + " | " + event.getStartTime()
-                    + " | " + event.getEndTime();
+            return EVENT_TYPE_CODE + FIELD_SEPARATOR
+                    + status + FIELD_SEPARATOR
+                    + event.getDescription() + FIELD_SEPARATOR
+                    + event.getStartTime() + FIELD_SEPARATOR
+                    + event.getEndTime();
         }
 
         return null;
@@ -113,29 +135,29 @@ public class Storage {
     }
 
     private Task parseTask(String line) {
-        String[] parts = line.split(" \\| ");
+        String[] parts = line.split(FIELD_SEPARATOR_REGEX);
         Task task;
 
-        switch (parts[0]) {
-            case "T":
-                task = new Todo(parts[2]);
+        switch (parts[TYPE_INDEX]) {
+            case TODO_TYPE_CODE:
+                task = new Todo(parts[DESCRIPTION_INDEX]);
                 break;
-            case "D":
+            case DEADLINE_TYPE_CODE:
                 task = new Deadline(
-                        parts[2],
-                        LocalDate.parse(parts[3]));
+                        parts[DESCRIPTION_INDEX],
+                        LocalDate.parse(parts[FIRST_DETAIL_INDEX]));
                 break;
-            case "E":
+            case EVENT_TYPE_CODE:
                 task = new Event(
-                        parts[2],
-                        parts[3],
-                        parts[4]);
+                        parts[DESCRIPTION_INDEX],
+                        parts[FIRST_DETAIL_INDEX],
+                        parts[SECOND_DETAIL_INDEX]);
                 break;
             default:
                 return null;
         }
 
-        if (parts[1].equals("1")) {
+        if (parts[STATUS_INDEX].equals(COMPLETE_STATUS_CODE)) {
             task.markAsDone();
         }
 
