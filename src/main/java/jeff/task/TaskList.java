@@ -2,6 +2,7 @@ package jeff.task;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * Stores and manages the user's tasks.
@@ -79,18 +80,12 @@ public class TaskList {
      * @return tasks with descriptions containing the keyword
      */
     public ArrayList<Task> findTasks(String keyword) {
-        ArrayList<Task> matchingTasks = new ArrayList<>();
         String normalizedKeyword = keyword.toLowerCase(Locale.ROOT);
 
-        for (Task task : tasks) {
-            String normalizedDescription =
-                    task.getDescription().toLowerCase(Locale.ROOT);
-
-            if (normalizedDescription.contains(normalizedKeyword)) {
-                matchingTasks.add(task);
-            }
-        }
-
-        return matchingTasks;
+        return tasks.stream()
+                .filter(task -> task.getDescription()
+                        .toLowerCase(Locale.ROOT)
+                        .contains(normalizedKeyword))
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 }
