@@ -2,6 +2,7 @@ package jeff.task;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * Stores and manages the user's tasks.
@@ -24,6 +25,7 @@ public class TaskList {
         assert tasks != null : "Task list must not be null";
         this.tasks = tasks;
     }
+
     /**
      * Returns the number of tasks in the list.
      *
@@ -44,6 +46,7 @@ public class TaskList {
                 : "Task index must be within the task list";
         return tasks.get(index);
     }
+
     /**
      * Adds a task to the list.
      *
@@ -53,6 +56,7 @@ public class TaskList {
         assert task != null : "Task to add must not be null";
         tasks.add(task);
     }
+
     /**
      * Deletes and returns the task at the specified index.
      *
@@ -64,6 +68,7 @@ public class TaskList {
                 : "Task index must be within the task list";
         return tasks.remove(index);
     }
+
     /**
      * Returns all tasks in the list.
      *
@@ -81,19 +86,12 @@ public class TaskList {
      * @return tasks with descriptions containing the keyword
      */
     public ArrayList<Task> findTasks(String keyword) {
-        assert keyword != null : "Search keyword must not be null";
-        ArrayList<Task> matchingTasks = new ArrayList<>();
         String normalizedKeyword = keyword.toLowerCase(Locale.ROOT);
 
-        for (Task task : tasks) {
-            String normalizedDescription =
-                    task.getDescription().toLowerCase(Locale.ROOT);
-
-            if (normalizedDescription.contains(normalizedKeyword)) {
-                matchingTasks.add(task);
-            }
-        }
-
-        return matchingTasks;
+        return tasks.stream()
+                .filter(task -> task.getDescription()
+                        .toLowerCase(Locale.ROOT)
+                        .contains(normalizedKeyword))
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 }
