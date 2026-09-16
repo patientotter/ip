@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import jeff.parser.Parser;
+import jeff.parser.UpdateRequest;
 import jeff.storage.Storage;
 import jeff.task.Deadline;
 import jeff.task.Event;
@@ -109,6 +110,9 @@ public class Jeff {
                 break;
             case "find":
                 findTasks(input);
+                break;
+            case "update":
+                updateTask(input);
                 break;
             default:
                 ui.showMessage("Invalid command.");
@@ -263,6 +267,29 @@ public class Jeff {
                 ui.showMessage(
                         " " + (i + 1) + "." + matchingTasks.get(i));
             }
+        } catch (IllegalArgumentException e) {
+            ui.showMessage(e.getMessage());
+        }
+    }
+
+    private void updateTask(String input) {
+        try {
+            UpdateRequest request = Parser.parseUpdate(input);
+            int taskNumber = request.getTaskNumber();
+
+            if (!isValidTaskNumber(taskNumber)) {
+                ui.showMessage("That task number does not exist.");
+                return;
+            }
+
+            Task updatedTask = tasks.updateTask(
+                    taskNumber - 1,
+                    request.getField(),
+                    request.getValue());
+            saveTasks();
+
+            ui.showMessage("I've updated this task:");
+            ui.showMessage("  " + updatedTask);
         } catch (IllegalArgumentException e) {
             ui.showMessage(e.getMessage());
         }
