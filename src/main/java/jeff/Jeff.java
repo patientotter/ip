@@ -20,6 +20,10 @@ public class Jeff {
     private final Storage storage;
     private final TaskList tasks;
     private final Ui ui;
+    /**
+     * Loading failure that prevents commands from overwriting existing data.
+     */
+    private String loadError;
 
     /**
      * Creates Jeff using the specified task-storage file.
@@ -35,9 +39,10 @@ public class Jeff {
         try {
             loadedTasks = new TaskList(storage.loadTasks());
         } catch (IOException e) {
-            ui.showMessage(
-                    "Unable to load saved tasks. "
-                            + "Starting with an empty list.");
+            loadError = "Unable to load saved tasks. " + e.getMessage()
+                    + " Task commands are disabled to protect your data."
+                    + " Check data/duke.txt and its permissions,"
+                    + " then restart Jeff.";
             loadedTasks = new TaskList();
         }
 
@@ -81,7 +86,27 @@ public class Jeff {
      * @return True if the user requested to exit.
      */
     private boolean processCommand(String input) {
+        if (input.contains("\n") || input.contains("\r")) {
+            ui.showMessage("Please enter one command on a single line.");
+            return false;
+        }
+
+        input = input.trim();
         String command = Parser.getCommandWord(input);
+        if (loadError != null && !command.equals("bye")) {
+            ui.showMessage(loadError);
+            return false;
+        }
+
+        boolean containsTaskDetails = command.equals("todo")
+                || command.equals("deadline")
+                || command.equals("event")
+                || command.equals("update");
+
+        if (containsTaskDetails && input.contains("|")) {
+            ui.showMessage("Task details cannot contain the | character.");
+            return false;
+        }
 
         switch (command) {
             case "bye":
@@ -142,7 +167,9 @@ public class Jeff {
 
             Task task = tasks.getTask(taskNumber - 1);
             task.markAsDone();
-            saveTasks();
+            if (!saveTasks()) {
+                return;
+            }
 
             ui.showMessage(
                     "Nice! I've marked this task as done:");
@@ -166,7 +193,9 @@ public class Jeff {
 
             Task task = tasks.getTask(taskNumber - 1);
             task.unmarkAsDone();
-            saveTasks();
+            if (!saveTasks()) {
+                return;
+            }
 
             ui.showMessage(
                     "I've marked this task as undone:");
@@ -207,7 +236,11 @@ public class Jeff {
 
     private void addTask(Task task) {
         tasks.addTask(task);
-        saveTasks();
+
+        if (!saveTasks()) {
+            return;
+        }
+
         showTaskAdded(task);
     }
 
@@ -222,7 +255,9 @@ public class Jeff {
             }
 
             Task removedTask = tasks.deleteTask(taskNumber - 1);
-            saveTasks();
+            if (!saveTasks()) {
+                return;
+            }
 
             ui.showMessage("Noted. I've removed this task:");
             ui.showMessage("  " + removedTask);
@@ -248,11 +283,21 @@ public class Jeff {
                         + " tasks in the list.");
     }
 
-    private void saveTasks() {
+    /**
+     * Saves the current task list and reports any failure.
+     *
+     * @return True if the task list was saved successfully.
+     */
+    private boolean saveTasks() {
         try {
             storage.saveTasks(tasks.getTasks());
+            return true;
         } catch (IOException e) {
-            ui.showMessage("Unable to save tasks.");
+            ui.showMessage(
+                "Unable to save tasks. The change is kept in memory only.",
+                "Check the data folder and file permissions.",
+                "Keep Jeff open: unsaved changes will be lost when you exit.");
+            return false;
         }
     }
 
@@ -286,7 +331,9 @@ public class Jeff {
                     taskNumber - 1,
                     request.getField(),
                     request.getValue());
-            saveTasks();
+            if (!saveTasks()) {
+                return;
+            }
 
             ui.showMessage("I've updated this task:");
             ui.showMessage("  " + updatedTask);
