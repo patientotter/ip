@@ -37,6 +37,12 @@ public class MainWindow extends AnchorPane {
     private Jeff jeff;
 
     /**
+     * Creates the main chatbot window controller.
+     */
+    public MainWindow() {
+    }
+
+    /**
      * Initializes the GUI after its FXML elements have been loaded.
      */
     @FXML

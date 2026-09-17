@@ -15,6 +15,12 @@ import jeff.gui.MainWindow;
 public class Main extends Application {
     private final Jeff jeff = new Jeff("data/duke.txt");
 
+    /**
+     * Creates the JavaFX application.
+     */
+    public Main() {
+    }
+
     @Override
     public void start(Stage stage) {
         try {

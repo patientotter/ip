@@ -6,7 +6,8 @@ import javafx.application.Application;
  * Launches the JavaFX application.
  */
 public class Launcher {
-
+    private Launcher() {
+    }
     /**
      * Starts the JavaFX application.
      *

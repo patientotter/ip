@@ -36,6 +36,11 @@ public class Storage {
 
     private final Path filePath;
 
+    /**
+     * Creates a storage manager for the specified file.
+     *
+     * @param filePath Path of the task-storage file.
+     */
     public Storage(String filePath) {
         this.filePath = Path.of(filePath);
     }

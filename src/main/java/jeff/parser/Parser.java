@@ -6,6 +6,7 @@ import java.time.format.DateTimeParseException;
 import jeff.task.Deadline;
 import jeff.task.Event;
 import jeff.task.Todo;
+import jeff.task.UpdateField;
 
 /**
  * Parses user input into commands and task information.
@@ -168,5 +169,68 @@ public class Parser {
         }
 
         return keyword;
+    }
+
+    /**
+     * Returns the update details parsed from the specified user input.
+     *
+     * @param input Full user input.
+     * @return Parsed update request.
+     * @throws IllegalArgumentException If the update details are invalid.
+     */
+    public static UpdateRequest parseUpdate(String input) {
+        String updateDetails = input.substring("update".length()).trim();
+
+        if (updateDetails.isEmpty()) {
+            throw new IllegalArgumentException("Please enter a task number.");
+        }
+
+        String[] taskNumberAndUpdate = updateDetails.split("\\s+", 2);
+        int taskNumber = parseUpdateTaskNumber(taskNumberAndUpdate[0]);
+
+        if (taskNumberAndUpdate.length < 2) {
+            throw new IllegalArgumentException(
+                    "An update command needs a field.");
+        }
+
+        String[] fieldAndValue =
+                taskNumberAndUpdate[1].trim().split("\\s+", 2);
+        UpdateField field =
+                UpdateField.fromCommandFlag(fieldAndValue[0]);
+
+        if (fieldAndValue.length < 2 || fieldAndValue[1].isBlank()) {
+            throw new IllegalArgumentException(
+                    "An update command needs a new value.");
+        }
+
+        String value = fieldAndValue[1].trim();
+
+        if (containsUpdateField(value)) {
+            throw new IllegalArgumentException(
+                    "Please update one field at a time.");
+        }
+
+        return new UpdateRequest(taskNumber, field, value);
+    }
+
+    private static int parseUpdateTaskNumber(String taskNumberText) {
+        try {
+            return Integer.parseInt(taskNumberText);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(
+                    "Please enter a valid task number.");
+        }
+    }
+
+    private static boolean containsUpdateField(String value) {
+        String[] words = value.split("\\s+");
+
+        for (String word : words) {
+            if (UpdateField.isCommandFlag(word)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
