@@ -27,7 +27,7 @@ costly and brittle to automate in this project.
 
 1. Use Java 25.
 2. Run `.\gradlew clean run` on Windows or `./gradlew clean run` on macOS/Linux.
-3. Use an empty data directory or back up `data/duke.txt` before testing.
+3. Use an empty data directory or back up `data/jeff.txt` before testing.
 
 ### Main window and input
 
