@@ -144,7 +144,7 @@ public class StorageTest {
     }
 
     @Test
-    public void loadTasks_directoryInsteadOfFile_throwsIOException()
+    public void loadTasks_directoryInsteadOfFile_throwsIoException()
             throws IOException {
         Path directory = temporaryDirectory.resolve("tasks.txt");
         Files.createDirectory(directory);
