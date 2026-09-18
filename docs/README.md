@@ -636,5 +636,3 @@ Invalid command.
 
 - The JavaFX GUI structure was adapted from the
   [SE-EDU JavaFX Tutorial](https://se-education.org/guides/tutorials/javaFx.html).
-- Add any other libraries, code, images, or solutions adapted from external
-  sources here.
