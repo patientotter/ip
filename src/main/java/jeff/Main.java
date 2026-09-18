@@ -13,7 +13,7 @@ import jeff.gui.MainWindow;
  * Displays the FXML-based Jeff GUI.
  */
 public class Main extends Application {
-    private final Jeff jeff = new Jeff("data/duke.txt");
+    private final Jeff jeff = new Jeff("data/jeff.txt");
 
     /**
      * Creates the JavaFX application.

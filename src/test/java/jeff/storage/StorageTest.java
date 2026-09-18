@@ -29,7 +29,7 @@ public class StorageTest {
     public void saveAndLoadTasks_multipleTaskTypes_restoresTasks()
             throws IOException {
         Path filePath =
-                temporaryDirectory.resolve("data").resolve("duke.txt");
+                temporaryDirectory.resolve("data").resolve("jeff.txt");
         Storage storage = new Storage(filePath.toString());
 
         ArrayList<Task> originalTasks = new ArrayList<>();
@@ -77,7 +77,7 @@ public class StorageTest {
     public void loadTasks_missingFile_returnsEmptyList()
             throws IOException {
         Path filePath =
-                temporaryDirectory.resolve("missing").resolve("duke.txt");
+                temporaryDirectory.resolve("missing").resolve("jeff.txt");
         Storage storage = new Storage(filePath.toString());
 
         ArrayList<Task> loadedTasks = storage.loadTasks();
@@ -89,7 +89,7 @@ public class StorageTest {
     public void saveTasks_missingParentDirectory_createsFile()
             throws IOException {
         Path filePath =
-                temporaryDirectory.resolve("new-data").resolve("duke.txt");
+                temporaryDirectory.resolve("new-data").resolve("jeff.txt");
         Storage storage = new Storage(filePath.toString());
 
         ArrayList<Task> tasks = new ArrayList<>();
