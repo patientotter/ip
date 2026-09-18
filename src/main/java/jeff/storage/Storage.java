@@ -33,6 +33,9 @@ public class Storage {
     private static final int DESCRIPTION_INDEX = 2;
     private static final int FIRST_DETAIL_INDEX = 3;
     private static final int SECOND_DETAIL_INDEX = 4;
+    private static final int TODO_FIELD_COUNT = 3;
+    private static final int DEADLINE_FIELD_COUNT = 4;
+    private static final int EVENT_FIELD_COUNT = 5;
 
     private final Path filePath;
 
@@ -109,30 +112,27 @@ public class Storage {
     }
 
     /**
-     * Loads tasks from the configured data file.
+     * Loads all tasks from the configured data file.
      *
-     * @return tasks loaded from the file
-     * @throws IOException if the file cannot be read
+     * @return Tasks loaded from the file.
+     * @throws IOException If the file cannot be read or contains invalid records.
      */
     public ArrayList<Task> loadTasks() throws IOException {
         ArrayList<Task> tasks = new ArrayList<>();
 
-        if (!Files.exists(filePath)) {
+        if (Files.notExists(filePath)) {
             return tasks;
         }
 
         List<String> lines = Files.readAllLines(filePath);
 
-        for (String line : lines) {
+        for (int i = 0; i < lines.size(); i++) {
             try {
-                Task task = parseTask(line);
-
-                if (task != null) {
-                    tasks.add(task);
-                }
-            } catch (ArrayIndexOutOfBoundsException
-                     | DateTimeParseException e) {
-                // Skip corrupted lines instead of crashing the program.
+                tasks.add(parseTask(lines.get(i)));
+            } catch (IllegalArgumentException | DateTimeParseException e) {
+                throw new IOException(
+                        "Invalid saved task at line " + (i + 1) + ".",
+                        e);
             }
         }
 
@@ -140,7 +140,9 @@ public class Storage {
     }
 
     private Task parseTask(String line) {
-        String[] parts = line.split(FIELD_SEPARATOR_REGEX);
+        String[] parts = line.split(FIELD_SEPARATOR_REGEX, -1);
+        validateRecord(parts);
+
         Task task;
 
         switch (parts[TYPE_INDEX]) {
@@ -159,7 +161,8 @@ public class Storage {
                         parts[SECOND_DETAIL_INDEX]);
                 break;
             default:
-                return null;
+                throw new IllegalArgumentException(
+                        "Unknown saved task type.");
         }
 
         if (parts[STATUS_INDEX].equals(COMPLETE_STATUS_CODE)) {
@@ -167,5 +170,49 @@ public class Storage {
         }
 
         return task;
+    }
+
+    /**
+     * Checks that a saved record has valid fields before parsing it.
+     *
+     * @param parts Fields of the saved record.
+     * @throws IllegalArgumentException If the record is invalid.
+     */
+    private void validateRecord(String[] parts) {
+        int expectedFieldCount = getExpectedFieldCount(parts[TYPE_INDEX]);
+
+        if (parts.length != expectedFieldCount) {
+            throw new IllegalArgumentException(
+                    "Incorrect number of saved task fields.");
+        }
+
+        for (String part : parts) {
+            if (part.isBlank() || part.contains("|")) {
+                throw new IllegalArgumentException(
+                        "Invalid saved task field.");
+            }
+        }
+
+        String status = parts[STATUS_INDEX];
+
+        if (!status.equals(INCOMPLETE_STATUS_CODE)
+                && !status.equals(COMPLETE_STATUS_CODE)) {
+            throw new IllegalArgumentException(
+                    "Invalid saved completion status.");
+        }
+    }
+
+    private int getExpectedFieldCount(String typeCode) {
+        switch (typeCode) {
+            case TODO_TYPE_CODE:
+                return TODO_FIELD_COUNT;
+            case DEADLINE_TYPE_CODE:
+                return DEADLINE_FIELD_COUNT;
+            case EVENT_TYPE_CODE:
+                return EVENT_FIELD_COUNT;
+            default:
+                throw new IllegalArgumentException(
+                        "Unknown saved task type.");
+        }
     }
 }

@@ -2,6 +2,8 @@ package jeff.parser;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import jeff.task.Deadline;
 import jeff.task.Event;
@@ -78,8 +80,10 @@ public class Parser {
      * @throws IllegalArgumentException If the deadline details are invalid.
      */
     public static Deadline parseDeadline(String input) {
-        String deadlineDetails = input.substring("deadline".length()).trim();
-        int bySeparatorIndex = deadlineDetails.indexOf("/by");
+        String deadlineDetails = input.trim()
+                .substring("deadline".length()).trim();
+        int bySeparatorIndex = findUniqueSeparator(
+                deadlineDetails, "/by");
 
         if (bySeparatorIndex == -1) {
             throw new IllegalArgumentException(
@@ -87,7 +91,8 @@ public class Parser {
         }
 
         String description = deadlineDetails.substring(0, bySeparatorIndex).trim();
-        String dueDateText = deadlineDetails.substring(bySeparatorIndex + 3).trim();
+        String dueDateText = deadlineDetails
+                .substring(bySeparatorIndex + "/by".length()).trim();
 
         if (description.isEmpty()) {
             throw new IllegalArgumentException(
@@ -115,10 +120,13 @@ public class Parser {
      * @throws IllegalArgumentException If the event details are invalid.
      */
     public static Event parseEvent(String input) {
-        String eventDetails = input.substring("event".length()).trim();
+        String eventDetails = input.trim()
+                .substring("event".length()).trim();
 
-        int fromSeparatorIndex = eventDetails.indexOf(" /from ");
-        int toSeparatorIndex = eventDetails.indexOf(" /to ");
+        int fromSeparatorIndex = findUniqueSeparator(
+                eventDetails, "/from");
+        int toSeparatorIndex = findUniqueSeparator(
+                eventDetails, "/to");
 
         if (fromSeparatorIndex == -1
                 || toSeparatorIndex == -1
@@ -128,12 +136,15 @@ public class Parser {
                             + "event <description> /from <time> /to <time>");
         }
 
-        String description =
-                eventDetails.substring(0, fromSeparatorIndex).trim();
-        String startTime =
-                eventDetails.substring(fromSeparatorIndex + 7, toSeparatorIndex).trim();
-        String endTime =
-                eventDetails.substring(toSeparatorIndex + 5).trim();
+        String description = eventDetails
+                .substring(0, fromSeparatorIndex).trim();
+        String startTime = eventDetails
+                .substring(
+                        fromSeparatorIndex + "/from".length(),
+                        toSeparatorIndex)
+                .trim();
+        String endTime = eventDetails
+                .substring(toSeparatorIndex + "/to".length()).trim();
 
         if (description.isEmpty()) {
             throw new IllegalArgumentException(
@@ -151,6 +162,34 @@ public class Parser {
         }
 
         return new Event(description, startTime, endTime);
+    }
+
+    /**
+     * Finds a separator appearing as a standalone token.
+     *
+     * @param details Command details to search.
+     * @param separator Separator to locate.
+     * @return Separator index, or -1 if absent.
+     * @throws IllegalArgumentException If the separator appears repeatedly.
+     */
+    private static int findUniqueSeparator(
+            String details, String separator) {
+        Pattern pattern = Pattern.compile(
+                "(?<!\\S)" + Pattern.quote(separator) + "(?=\\s|$)");
+        Matcher matcher = pattern.matcher(details);
+
+        if (!matcher.find()) {
+            return -1;
+        }
+
+        int separatorIndex = matcher.start();
+
+        if (matcher.find()) {
+            throw new IllegalArgumentException(
+                    "Please specify " + separator + " only once.");
+        }
+
+        return separatorIndex;
     }
 
     /**
