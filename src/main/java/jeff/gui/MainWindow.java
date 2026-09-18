@@ -13,6 +13,11 @@ import javafx.util.Duration;
 import jeff.Jeff;
 import jeff.parser.Parser;
 
+/*
+ * Adapted from the SE-EDU JavaFX Tutorial:
+ * https://se-education.org/guides/tutorials/javaFx.html
+ */
+
 /**
  * Controls the main chatbot window.
  */
@@ -20,7 +25,7 @@ public class MainWindow extends AnchorPane {
     private final Image userImage =
             new Image(getClass().getResourceAsStream("/images/DaUser.png"));
     private final Image jeffImage =
-            new Image(getClass().getResourceAsStream("/images/DaDuke.png"));
+            new Image(getClass().getResourceAsStream("/images/DaJeff.png"));
 
     @FXML
     private ScrollPane scrollPane;

@@ -41,7 +41,7 @@ public class Jeff {
         } catch (IOException e) {
             loadError = "Unable to load saved tasks. " + e.getMessage()
                     + " Task commands are disabled to protect your data."
-                    + " Check data/duke.txt and its permissions,"
+                    + " Check data/jeff.txt and its permissions,"
                     + " then restart Jeff.";
             loadedTasks = new TaskList();
         }
@@ -348,6 +348,6 @@ public class Jeff {
      * @param args Command-line arguments, which are not used.
      */
     public static void main(String[] args) {
-        new Jeff("data/duke.txt").run();
+        new Jeff("data/jeff.txt").run();
     }
 }
